@@ -35,6 +35,31 @@ export async function POST(request: NextRequest) {
       JSON.stringify(body, null, 2)
     );
 
+    // Get the first webhook entry
+    const entry = body.entry?.[0];
+
+    // Get the first change
+    const change = entry?.changes?.[0];
+
+    // Get the event data
+    const value = change?.value;
+
+    // Extract the comment text
+    const commentText =
+      value?.text ||
+      value?.message ||
+      value?.comment?.text ||
+      "";
+
+    console.log("Comment text:", commentText);
+
+    // Check whether the comment contains our keyword
+    if (commentText.toLowerCase().includes("website")) {
+      console.log("🔥 WEBSITE KEYWORD DETECTED!");
+
+      // Instagram DM functionality will be added here later
+    }
+
     return NextResponse.json(
       { received: true },
       { status: 200 }
