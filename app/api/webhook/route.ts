@@ -89,11 +89,16 @@ export async function POST(request: NextRequest) {
 
       const result = await response.json();
 
-      console.log("Instagram API status:", response.status);
-      console.log(
-        "Instagram API response:",
-        JSON.stringify(result, null, 2)
-      );
+if (response.ok) {
+  console.log("✅ Instagram DM sent successfully!");
+  console.log("Instagram API response:", JSON.stringify(result, null, 2));
+} else {
+  console.error("❌ Instagram DM failed!");
+  console.error("HTTP status:", response.status);
+  console.error(
+    "Instagram API error:",
+    JSON.stringify(result, null, 2)
+  );
     }
 
     return NextResponse.json(
