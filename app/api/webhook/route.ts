@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       const instagramUserId = process.env.INSTAGRAM_USER_ID;
 
       if (!accessToken || !instagramUserId) {
-        console.error("Missing Instagram environment variables");
+        console.error("❌ Missing Instagram environment variables");
 
         return NextResponse.json(
           { error: "Missing Instagram configuration" },
@@ -81,7 +81,8 @@ export async function POST(request: NextRequest) {
               comment_id: commentId,
             },
             message: {
-              text: "Hey! 👋 Thanks for commenting WEBSITE. I'll send you the website information shortly.",
+              text:
+                "Hey! 👋 Thanks for commenting WEBSITE. I'll send you the website information shortly.",
             },
           }),
         }
@@ -89,16 +90,17 @@ export async function POST(request: NextRequest) {
 
       const result = await response.json();
 
-if (response.ok) {
-  console.log("✅ Instagram DM sent successfully!");
-  console.log("Instagram API response:", JSON.stringify(result, null, 2));
-} else {
-  console.error("❌ Instagram DM failed!");
-  console.error("HTTP status:", response.status);
-  console.error(
-    "Instagram API error:",
-    JSON.stringify(result, null, 2)
-  );
+      if (response.ok) {
+        console.log("✅ Instagram DM sent successfully!");
+      } else {
+        console.error("❌ Instagram DM failed!");
+      }
+
+      console.log("Instagram API status:", response.status);
+      console.log(
+        "Instagram API response:",
+        JSON.stringify(result, null, 2)
+      );
     }
 
     return NextResponse.json(
