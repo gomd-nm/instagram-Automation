@@ -35,29 +35,65 @@ export async function POST(request: NextRequest) {
       JSON.stringify(body, null, 2)
     );
 
-    // Get the first webhook entry
     const entry = body.entry?.[0];
-
-    // Get the first change
     const change = entry?.changes?.[0];
-
-    // Get the event data
     const value = change?.value;
 
-    // Extract the comment text
     const commentText =
       value?.text ||
       value?.message ||
       value?.comment?.text ||
       "";
 
-    console.log("Comment text:", commentText);
+    const commentId = value?.id;
 
-    // Check whether the comment contains our keyword
-    if (commentText.toLowerCase().includes("website")) {
+    console.log("Comment text:", commentText);
+    console.log("Comment ID:", commentId);
+
+    if (
+      commentText.toLowerCase().includes("website") &&
+      commentId
+    ) {
       console.log("🔥 WEBSITE KEYWORD DETECTED!");
 
-      // Instagram DM functionality will be added here later
+      const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+      const instagramUserId = process.env.INSTAGRAM_USER_ID;
+
+      if (!accessToken || !instagramUserId) {
+        console.error("Missing Instagram environment variables");
+
+        return NextResponse.json(
+          { error: "Missing Instagram configuration" },
+          { status: 500 }
+        );
+      }
+
+      const response = await fetch(
+        `https://graph.instagram.com/v23.0/${instagramUserId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            recipient: {
+              comment_id: commentId,
+            },
+            message: {
+              text: "Hey! 👋 Thanks for commenting WEBSITE. I'll send you the website information shortly.",
+            },
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("Instagram API status:", response.status);
+      console.log(
+        "Instagram API response:",
+        JSON.stringify(result, null, 2)
+      );
     }
 
     return NextResponse.json(
